@@ -2,6 +2,8 @@ package ru.akirakozov.sd.refactoring.dao;
 
 import ru.akirakozov.sd.refactoring.model.Product;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,10 +28,7 @@ public class ProductDaoDb implements ProductDao {
             ArrayList<Product> result = new ArrayList<>();
 
             while (rs.next()) {
-                String name = rs.getString("name");
-                int price = rs.getInt("price");
-
-                result.add(new Product(name, price));
+                result.add(getNextProduct(rs));
             }
 
             return result;
@@ -38,22 +37,18 @@ public class ProductDaoDb implements ProductDao {
 
     @Override
     public Product max() {
-        return executeConstantQuery("SELECT * FROM PRODUCT ORDER BY PRICE DESC LIMIT 1", (rs) -> {
-            String name = rs.getString("name");
-            int price = rs.getInt("price");
-
-            return new Product(name, price);
-        });
+        return executeConstantQuery(
+                "SELECT * FROM PRODUCT ORDER BY PRICE DESC LIMIT 1",
+                ProductDaoDb::getNextProduct
+        );
     }
 
     @Override
     public Product min() {
-        return executeConstantQuery("SELECT * FROM PRODUCT ORDER BY PRICE LIMIT 1", (rs) -> {
-            String name = rs.getString("name");
-            int price = rs.getInt("price");
-
-            return new Product(name, price);
-        });
+        return executeConstantQuery(
+                "SELECT * FROM PRODUCT ORDER BY PRICE LIMIT 1",
+                ProductDaoDb::getNextProduct
+        );
     }
 
     @Override
@@ -64,6 +59,13 @@ public class ProductDaoDb implements ProductDao {
     @Override
     public long sum() {
         return executeConstantQuery("SELECT SUM(price) FROM PRODUCT", (rs) -> rs.getLong(1));
+    }
+
+    private static Product getNextProduct(ResultSet rs) throws SQLException {
+        String name = rs.getString("name");
+        int price = rs.getInt("price");
+
+        return new Product(name, price);
     }
 }
 
