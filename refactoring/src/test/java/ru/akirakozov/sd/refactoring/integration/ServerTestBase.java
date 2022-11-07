@@ -7,6 +7,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import ru.akirakozov.sd.refactoring.config.ConfigProvider;
 import ru.akirakozov.sd.refactoring.config.EndpointConfig;
+import ru.akirakozov.sd.refactoring.dao.ProductDao;
+import ru.akirakozov.sd.refactoring.dao.ProductDaoDb;
 import ru.akirakozov.sd.refactoring.servlet.AddProductServlet;
 import ru.akirakozov.sd.refactoring.servlet.GetProductsServlet;
 import ru.akirakozov.sd.refactoring.servlet.QueryServlet;
@@ -43,9 +45,11 @@ public abstract class ServerTestBase {
         context.setContextPath("/");
         server.setHandler(context);
 
-        context.addServlet(new ServletHolder(new AddProductServlet()), ENDPOINTS.addProduct());
-        context.addServlet(new ServletHolder(new GetProductsServlet()), ENDPOINTS.getProducts());
-        context.addServlet(new ServletHolder(new QueryServlet()), ENDPOINTS.query());
+        ProductDao productDao = new ProductDaoDb();
+
+        context.addServlet(new ServletHolder(new AddProductServlet(productDao)), ENDPOINTS.addProduct());
+        context.addServlet(new ServletHolder(new GetProductsServlet(productDao)), ENDPOINTS.getProducts());
+        context.addServlet(new ServletHolder(new QueryServlet(productDao)), ENDPOINTS.query());
 
         server.start();
     }

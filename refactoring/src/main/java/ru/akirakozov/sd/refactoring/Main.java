@@ -4,6 +4,8 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import ru.akirakozov.sd.refactoring.config.ConfigProvider;
+import ru.akirakozov.sd.refactoring.dao.ProductDao;
+import ru.akirakozov.sd.refactoring.dao.ProductDaoDb;
 import ru.akirakozov.sd.refactoring.servlet.AddProductServlet;
 import ru.akirakozov.sd.refactoring.servlet.GetProductsServlet;
 import ru.akirakozov.sd.refactoring.servlet.QueryServlet;
@@ -34,9 +36,14 @@ public class Main {
         context.setContextPath("/");
         server.setHandler(context);
 
-        context.addServlet(new ServletHolder(new AddProductServlet()), ConfigProvider.endpointPathConfig().addProduct());
-        context.addServlet(new ServletHolder(new GetProductsServlet()), ConfigProvider.endpointPathConfig().getProducts());
-        context.addServlet(new ServletHolder(new QueryServlet()), ConfigProvider.endpointPathConfig().query());
+        ProductDao productDao = new ProductDaoDb();
+
+        context.addServlet(new ServletHolder(new AddProductServlet(productDao)),
+                ConfigProvider.endpointPathConfig().addProduct());
+        context.addServlet(new ServletHolder(new GetProductsServlet(productDao)),
+                ConfigProvider.endpointPathConfig().getProducts());
+        context.addServlet(new ServletHolder(new QueryServlet(productDao)),
+                ConfigProvider.endpointPathConfig().query());
 
         server.start();
         server.join();
