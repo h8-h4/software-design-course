@@ -1,0 +1,53 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <!--    <link rel="stylesheet" th:href="@{/style.css}"/>-->
+</head>
+<body>
+
+<div class="container">
+    <form id="newtasklist" th:object="${newTaskList}" method="POST" action="/add-task-list">
+        <input id="add" type="text" placeholder="Add new task list" th:field="*{name}">
+        <input id="submit" type="submit" value="Add">
+    </form>
+
+
+    <div id="all">
+        <th:block th:each="taskList : ${all}">
+            <div class="taskList">
+                <div class="taskListDesc">
+                    <span th:text="${taskList.getName()}"/>
+                    <form th:action="@{/delete-task-list/{id}(id=${taskList.getId()})}" th:object="${taskList}"
+                          method="post">
+                        <button type="submit">Delete</button>
+                    </form>
+
+
+                    <div class="tasks">
+                        <form id="newTask" th:object="${newTask}" method="POST"
+                              th:action="@{/add-task/{list_id}(list_id=${taskList.getId()})}">
+                            <input id="addTask" type="text" placeholder="Add new task" th:field="*{description}">
+                            <input id="submitTask" type="submit" value="Add">
+                        </form>
+                        <th:block th:each="task : ${taskList.getTasks()}">
+                            <div class="task">
+                                <span th:text="${task.getDescription()}"/>
+                                <input id="check" type="checkbox" name="completed"
+                                       th:checked="${task.isCompleted()}" disabled/>
+                                <form th:action="@{/complete-task/{id}(id=${task.getId()})}" th:object="${task}"
+                                      method="post">
+                                    <button type="submit">Complete</button>
+                                </form>
+                            </div>
+                        </th:block>
+                    </div>
+
+                </div>
+            </div>
+        </th:block>
+    </div>
+
+
+</div>
+
+</body>
+</html>
