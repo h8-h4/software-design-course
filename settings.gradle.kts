@@ -8,3 +8,6 @@ include("expression")
 include("bridge")
 include("actor")
 include("event-sourcing")
+
+include("testcontainers:exchange")
+findProject(":testcontainers:exchange")?.name = "exchange"
