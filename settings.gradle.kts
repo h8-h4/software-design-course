@@ -11,3 +11,5 @@ include("event-sourcing")
 
 include("testcontainers:exchange")
 findProject(":testcontainers:exchange")?.name = "exchange"
+
+include("reactive")
